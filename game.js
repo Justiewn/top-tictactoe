@@ -3,19 +3,28 @@
 
 const Gameboard = () => {
     let gameArray = ['✕', '✕', '◯', '✕', '✕', '◯', '◯', '◯', '✕'];
-    return {gameArray};
+
+    const addToArray = (xo, sq) => {
+        gameArray[sq] = xo;
+    }
+    return {gameArray, addToArray};
 };
 
-
-
 const Logic = () => {
-    const displayBoard = (list) => {
+    const playerList = []
+    const addPlayer = (player) => {
+        if (playerList.length < 2) {
+            addPlayer.push(player);
+        } else console.log("max players reached");
+    }
+    
+    const updateBoard = (list) => {
         for (let i = 0; i < 9; i++) {
             const gridToAdd = document.querySelector(`#sq-${i}`);
             gridToAdd.innerHTML = list[i];
         }
     }
-    return {displayBoard};
+    return {updateBoard};
 };
 
 const Player = (name) => {
@@ -23,12 +32,17 @@ const Player = (name) => {
 };
 
 const game = Gameboard();
-
-console.log(game.gameArray);
-
-
-
-
 const master = Logic();
+const grids = document.querySelectorAll('.game-grid');
 
-master.displayBoard(game.gameArray);
+
+master.updateBoard(game.gameArray);
+
+grids.forEach(grid => {
+    grid.addEventListener("click", (e) => {
+        console.log('yes');
+        indexToAdd = e.target.getAttribute("data-no");
+        game.addToArray("GA", indexToAdd);
+        master.updateBoard(game.gameArray);
+    })
+})
