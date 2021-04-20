@@ -50,10 +50,23 @@ const Logic = () => {
     const checkWin = () => {
         const arr =thisGame.getArray();
         if (checkRows(arr) || checkCols(arr) || checkDiag(arr) ) {
-            console.log(`${useXO()} wins!`)
+            messageDiv.innerHTML = `${useXO()} wins the game!`
             return true;
         }
+
         playerTurn = !playerTurn;
+    }
+
+    const checkTie = () => {
+        const arr = thisGame.getArray();
+        for (let i = 0; i < 3; i++) {          
+            const row = arr[i];
+            if (row.some(val => val == " ")) {
+                return false;
+            }
+        }
+        messageDiv.innerHTML = `It was a tie!`
+        return true;
     }
 
     const checkRows = (array) => {
@@ -93,12 +106,13 @@ const Logic = () => {
         playerTurn = false;
         thisGame.resetGame();
         updateBoard();
+        messageDiv.innerHTML = '';
 
     }
     const useXO = () => {
         return (!playerTurn) ? '✕':'◯'
     }
-    return {setGame, updateBoard, playerMove, checkWin, reset};
+    return {setGame, updateBoard, playerMove, checkWin, checkTie, reset};
 };
 
 const Player = (name) => {
@@ -108,7 +122,8 @@ const Player = (name) => {
 const game = Gameboard();
 const master = Logic();
 const grids = document.querySelectorAll('.game-grid');
-
+const messageDiv = document.querySelector('#message-div');
+const resetButton = document.querySelector('#btn-reset');
 
 master.setGame(game);
 
@@ -120,9 +135,12 @@ grids.forEach(grid => {
         if (game.allowMove(xIndex, yIndex)) {
             master.playerMove(xIndex, yIndex);
             master.updateBoard();
-            if (master.checkWin()) {
-                master.reset();
-            }
+            master.checkWin();
+            master.checkTie();
         }
     })
+})
+
+resetButton.addEventListener("click", () => {
+    master.reset();
 })
