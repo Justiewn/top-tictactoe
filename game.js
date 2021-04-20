@@ -2,6 +2,7 @@
 
 
 const Gameboard = () => {
+    let gameOn = true;
     let gameArray = [[' ', ' ', ' '], [' ', ' ', ' '], [' ', ' ', ' ']];
 
     const addToArray = (xo, xIndex, yIndex) => {
@@ -14,11 +15,16 @@ const Gameboard = () => {
     const getArray = () => {
         return gameArray;
     }
-
+    const getGameOn = () => {
+        return gameOn;
+    }
+    const setGameOn = () => {
+        gameOn = !gameOn;
+    }
     const resetGame = () => {
         gameArray = [[' ', ' ', ' '], [' ', ' ', ' '], [' ', ' ', ' ']]
     }
-    return {getArray, addToArray, allowMove, resetGame};
+    return {getArray, addToArray, allowMove, resetGame, getGameOn, setGameOn};
 };
 
 const Logic = () => {
@@ -51,6 +57,7 @@ const Logic = () => {
         const arr =thisGame.getArray();
         if (checkRows(arr) || checkCols(arr) || checkDiag(arr) ) {
             messageDiv.innerHTML = `${useXO()} wins the game!`
+            thisGame.setGameOn();
             return true;
         }
 
@@ -66,6 +73,7 @@ const Logic = () => {
             }
         }
         messageDiv.innerHTML = `It was a tie!`
+        thisGame.setGameOn();
         return true;
     }
 
@@ -105,6 +113,7 @@ const Logic = () => {
     const reset = () => {
         playerTurn = false;
         thisGame.resetGame();
+        thisGame.setGameOn();
         updateBoard();
         messageDiv.innerHTML = '';
 
@@ -132,7 +141,7 @@ grids.forEach(grid => {
         
         let xIndex, yIndex;
         [xIndex, yIndex] = e.target.getAttribute("data-no").split('-');
-        if (game.allowMove(xIndex, yIndex)) {
+        if (game.allowMove(xIndex, yIndex) && game.getGameOn()) {
             master.playerMove(xIndex, yIndex);
             master.updateBoard();
             master.checkWin();
