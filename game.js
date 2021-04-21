@@ -2,7 +2,7 @@
 
 
 const Gameboard = () => {
-    let gameOn = true;
+    let gameOn = false;
     let gameArray = [[' ', ' ', ' '], [' ', ' ', ' '], [' ', ' ', ' ']];
 
     const addToArray = (xo, xIndex, yIndex) => {
@@ -34,6 +34,12 @@ const Logic = () => {
 
     const setGame = (game) => {
         thisGame = game;
+        playerTurn = false;
+        thisGame.resetGame();
+        thisGame.setGameOn();
+        updateBoard();
+        messageDiv.innerHTML = '';
+        turnDiv.innerHTML = `${useXO()}'s turn!`
     }
 
     const addPlayer = (player) => {
@@ -53,17 +59,23 @@ const Logic = () => {
             }
         }
     }
+    const updateMoveDisplay = () => {
+        turnDiv.innerHTML = `${useXO()}'s turn!`
+    }
+    const clearMoveDisplay = () => {
+        turnDiv.innerHTML = '';
+    }
     const checkWin = () => {
         const arr =thisGame.getArray();
         if (checkRows(arr) || checkCols(arr) || checkDiag(arr) ) {
             messageDiv.innerHTML = `${useXO()} wins the game!`
-            thisGame.setGameOn();
+            clearMoveDisplay()
             return true;
         }
-
         playerTurn = !playerTurn;
+        updateMoveDisplay();
+        
     }
-
     const checkTie = () => {
         const arr = thisGame.getArray();
         for (let i = 0; i < 3; i++) {          
@@ -73,7 +85,7 @@ const Logic = () => {
             }
         }
         messageDiv.innerHTML = `It was a tie!`
-        thisGame.setGameOn();
+        clearMoveDisplay()
         return true;
     }
 
@@ -109,19 +121,10 @@ const Logic = () => {
             return true
         }
     }
-    
-    const reset = () => {
-        playerTurn = false;
-        thisGame.resetGame();
-        thisGame.setGameOn();
-        updateBoard();
-        messageDiv.innerHTML = '';
-
-    }
     const useXO = () => {
         return (!playerTurn) ? '✕':'◯'
     }
-    return {setGame, updateBoard, playerMove, checkWin, checkTie, reset};
+    return {setGame, updateBoard, playerMove, checkWin, checkTie};
 };
 
 const Player = (name) => {
@@ -133,6 +136,7 @@ const master = Logic();
 const grids = document.querySelectorAll('.game-grid');
 const messageDiv = document.querySelector('#message-div');
 const resetButton = document.querySelector('#btn-reset');
+const turnDiv = document.querySelector('#turn-div');
 
 master.setGame(game);
 
@@ -144,12 +148,13 @@ grids.forEach(grid => {
         if (game.allowMove(xIndex, yIndex) && game.getGameOn()) {
             master.playerMove(xIndex, yIndex);
             master.updateBoard();
-            master.checkWin();
-            master.checkTie();
+            if (master.checkWin() || master.checkTie()){
+                game.setGameOn();
+            }
         }
     })
 })
 
 resetButton.addEventListener("click", () => {
-    master.reset();
+    master.setGame(game);
 })
