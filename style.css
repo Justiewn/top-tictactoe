@@ -59,8 +59,10 @@ h1 {
 }
 
 
-.board-square:hover {
-    background: rgb(240, 240, 240);
+.game-grid:hover {
+    color: rgb(0, 0, 0);
+    background: rgb(221, 221, 221);
+    border:solid 5px rgb(36, 36, 36);
 }
 
 
